@@ -32,7 +32,7 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
   return (
     <MusicButton onPress={() => handleSelectMusic(music.index)}>
       <MusicCoverContainer>
-        <MaterialIcons name="music-note" size={70} color={colors.secondary} />
+        <MaterialIcons name="music-note" size={60} color={colors.secondary} />
       </MusicCoverContainer>
       <MusicContentContainer>
         <MusicNameContainer>
@@ -50,7 +50,7 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
             numberOfLines={2}
             isPlaying={music.path === currentMusicPath}
           >
-            {music.name}
+            {music.name.split(".")[0]}
           </MusicName>
         </MusicNameContainer>
         <MusicDuration>{secondsToTime(music.duration)}</MusicDuration>

@@ -36,4 +36,5 @@ module.exports = async function () {
     await TrackPlayer.play();
   });
   TrackPlayer.addEventListener(Event.RemoteSeek, data => TrackPlayer.seekTo(data.position))
+  TrackPlayer.addEventListener(Event.RemoteDuck, data => TrackPlayer.pause())
 };

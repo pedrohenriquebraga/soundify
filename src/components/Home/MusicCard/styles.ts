@@ -3,11 +3,9 @@ import styled from "styled-components/native";
 import fonts from "../../../styles/fonts";
 
 export const MusicButton = styled.TouchableOpacity`
-  background-color: ${({ theme }) => theme.colors.shape};
   padding: 8px;
   flex-direction: row;
   border-radius: 12px;
-  elevation: 2;
   margin-top: 10px;
 `;
 
@@ -39,7 +37,8 @@ export const MusicNameContainer = styled.View`
 export const MusicName = styled.Text<{ isPlaying?: boolean }>`
   max-height: 40px;
   font-family: ${fonts.name};
-  font-size: 12px;
+  font-size: 11px;
+  margin-top: 10px;
   flex: 1;
   color: ${({ theme, isPlaying }) => isPlaying ? theme.colors.primary : theme.colors.black};
 `;

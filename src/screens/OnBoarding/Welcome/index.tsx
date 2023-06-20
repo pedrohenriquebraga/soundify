@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import Button from "../../../components/Button";
-import { usePersistedState } from "../../../hooks/usePersistedState";
 import {
   Animation,
   AnimationContainer,
@@ -10,9 +9,10 @@ import {
   Subtitle,
   Title,
 } from "./styles";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 const Welcome: React.FC = () => {
-  const navigation = useNavigation()
+  const navigation = useNavigation<StackNavigationProp<any>>()
 
   const handleStart = () => {
     navigation.navigate("Permissions")
@@ -28,7 +28,7 @@ const Welcome: React.FC = () => {
         />
       </AnimationContainer>
       <ContentContainer>
-        <Title>Bem-vindo ao Soundfy!</Title>
+        <Title>Bem-vindo ao Soundify!</Title>
         <Subtitle>
           Ouça suas músicas favoritas em qualquer lugar de forma simples e
           fácil!

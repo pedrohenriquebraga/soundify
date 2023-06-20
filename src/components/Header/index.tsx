@@ -13,10 +13,11 @@ import { useNavigation } from "@react-navigation/native";
 interface HeaderProps {
   title?: string;
   showBack?: boolean;
+  children?: React.ReactElement[]
 }
 
 const Header: React.FC<HeaderProps> = ({
-  title = "Soundfy",
+  title = "Soundify",
   showBack,
   children,
 }) => {

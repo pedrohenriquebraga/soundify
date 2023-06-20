@@ -4,7 +4,7 @@ import PresentationHeader from "../PresentationHeader";
 import { Feather } from "@expo/vector-icons";
 import { FlatList } from "react-native";
 import { usePlayer } from "../../../contexts/player";
-import { EmptyListContainer, EmptyListText, SectionTitle } from "./styles";
+import { SectionTitle } from "./styles";
 import Loading from "../../Loading";
 
 interface IPageSection {
@@ -16,7 +16,6 @@ interface IPageSection {
 const Main: React.FC = () => {
   const {
     allMusics,
-    recentListenMusics,
     currentMusic,
     hasMoreMusics,
     fetchingMusics,
@@ -28,29 +27,6 @@ const Main: React.FC = () => {
       {
         key: "HEADER",
         render: () => <PresentationHeader />,
-      },
-      {
-        key: "RECENT_LISTEN",
-        isTitle: true,
-        render: () => (
-          <SectionTitle>
-            <Feather name="clock" size={16} /> Tocadas recentemente
-          </SectionTitle>
-        ),
-      },
-      {
-        key: "RECENT_LISTEN_LIST",
-        render: () => (
-          <>
-            {recentListenMusics.length ? (
-              <MusicSection content={recentListenMusics} />
-            ) : (
-              <EmptyListContainer>
-                <EmptyListText>Nenhuma música todas recentemente</EmptyListText>
-              </EmptyListContainer>
-            )}
-          </>
-        ),
       },
       {
         key: "ALL_MUSICS",
@@ -74,7 +50,7 @@ const Main: React.FC = () => {
       data,
       indices,
     };
-  }, [allMusics, recentListenMusics]);
+  }, [allMusics]);
 
   return (
     <FlatList

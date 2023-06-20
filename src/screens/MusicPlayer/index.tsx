@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "../../components/Header";
 import {
   Blur,
@@ -6,7 +6,6 @@ import {
   MusicControllerButton,
   MusicControllers,
   MusicControllersContainer,
-  MusicCover,
   MusicCoverContainer,
   MusicDuration,
   MusicDurationContainer,
@@ -21,8 +20,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
 import { usePlayer } from "../../contexts/player";
 import { secondsToTime } from "../../utils/time";
-import { BlurView } from "@react-native-community/blur";
-import { MotiView } from "moti";
 
 const MusicPlayer: React.FC = () => {
   const {

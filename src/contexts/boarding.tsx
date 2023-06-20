@@ -8,7 +8,7 @@ interface IBoardingContext {
 
 const BoardingContext = createContext<IBoardingContext>({} as IBoardingContext);
 
-const BoardingProvider: React.FC = ({ children }) => {
+const BoardingProvider: React.FC<any> = ({ children }) => {
   const [onBoarded, setOnBoarded] = usePersistedState(
     "@SoundfyPlayer:onBoarded",
     false
@@ -16,10 +16,6 @@ const BoardingProvider: React.FC = ({ children }) => {
   const handleSetOnBoarded = async () => {
     setOnBoarded(true);
   };
-
-  useEffect(() => {
-    (async () => {})();
-  }, []);
 
   return (
     <BoardingContext.Provider

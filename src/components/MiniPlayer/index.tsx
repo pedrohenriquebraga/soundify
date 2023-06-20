@@ -49,7 +49,7 @@ const MiniPlayer: React.FC = () => {
               agora...
             </MiniPlayerTitle>
             <MiniPlayerMusicName numberOfLines={1}>
-              {currentMusic?.name}
+              {currentMusic?.name.split(".")[0]}
             </MiniPlayerMusicName>
           </MiniPlayerContentContainer>
         </MiniPlayerLeftSide>
