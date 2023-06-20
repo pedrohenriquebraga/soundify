@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "soundify",
+    "name": "Soundify",
     "slug": "soundify",
     "version": "1.0.0",
+    "jsEngine": "hermes",
     "assetBundlePatterns": [
       "**/*"
     ]
