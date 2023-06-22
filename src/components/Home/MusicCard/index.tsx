@@ -36,6 +36,12 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
       </MusicCoverContainer>
       <MusicContentContainer>
         <MusicNameContainer>
+          <MusicName
+            numberOfLines={2}
+            isPlaying={music.path === currentMusicPath}
+          >
+            {music.name.split(".")[0]}
+          </MusicName>
           {music.path === currentMusicPath && (
             <MusicPlayingAnimationContainer>
               <MusicPlayingAnimation
@@ -46,12 +52,6 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
               />
             </MusicPlayingAnimationContainer>
           )}
-          <MusicName
-            numberOfLines={2}
-            isPlaying={music.path === currentMusicPath}
-          >
-            {music.name.split(".")[0]}
-          </MusicName>
         </MusicNameContainer>
         <MusicDuration>{secondsToTime(music.duration)}</MusicDuration>
       </MusicContentContainer>

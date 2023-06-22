@@ -36,5 +36,13 @@ module.exports = async function () {
     await TrackPlayer.play();
   });
   TrackPlayer.addEventListener(Event.RemoteSeek, data => TrackPlayer.seekTo(data.position))
-  TrackPlayer.addEventListener(Event.RemoteDuck, data => TrackPlayer.pause())
+  TrackPlayer.addEventListener(Event.RemoteDuck, async data => {
+    const { paused, permanent } = data
+
+    if (paused) {
+      await TrackPlayer.pause()
+    } else if (!paused && !permanent) {
+      await TrackPlayer.play()
+    }
+  })
 };

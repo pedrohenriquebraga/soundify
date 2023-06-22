@@ -78,7 +78,7 @@ ext {
  * use App Bundles (https://developer.android.com/guide/app-bundle/)
  * and want to have separate APKs to upload to the Play Store.
  */
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
@@ -126,11 +126,20 @@ android {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
+            universalApk true  // If true, also generate a universal APK
             include (*reactNativeArchitectures())
         }
     }
     signingConfigs {
+        release {
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            }
+        }
+
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -139,13 +148,14 @@ android {
         }
     }
     buildTypes {
+
         debug {
             signingConfig signingConfigs.debug
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
