@@ -1,9 +1,18 @@
 import TrackPlayer from "../services/trackPlayer"
-import { Event } from "react-native-track-player"
+import { Event, State } from "react-native-track-player"
 
 module.exports = async function () {
-  TrackPlayer.addEventListener(Event.RemotePlay, () => TrackPlayer.play());
-  TrackPlayer.addEventListener(Event.RemotePause, () => TrackPlayer.pause());
+
+  let userPaused = false;
+
+  TrackPlayer.addEventListener(Event.RemotePlay, async () => {
+    await TrackPlayer.play();
+    userPaused = false;
+  });
+  TrackPlayer.addEventListener(Event.RemotePause, async () => {
+    await TrackPlayer.pause()
+    userPaused = true;
+  });
   TrackPlayer.addEventListener(Event.RemoteNext, async () => {
     
     const currentTrack = await TrackPlayer.getCurrentTrack();
@@ -37,11 +46,11 @@ module.exports = async function () {
   });
   TrackPlayer.addEventListener(Event.RemoteSeek, data => TrackPlayer.seekTo(data.position))
   TrackPlayer.addEventListener(Event.RemoteDuck, async data => {
-    const { paused, permanent } = data
+    const { paused, permanent } = data;
 
     if (paused) {
       await TrackPlayer.pause()
-    } else if (!paused && !permanent) {
+    } else if (!paused && !permanent && !userPaused) {
       await TrackPlayer.play()
     }
   })
