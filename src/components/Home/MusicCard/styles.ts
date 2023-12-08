@@ -13,6 +13,7 @@ export const MusicContentContainer = styled.View`
   flex: 1;
   justify-content: center;
   padding: 10px 15px 0px 5px;
+  margin-left: 10px;
 `;
 
 export const MusicCoverContainer = styled.View`
@@ -25,7 +26,7 @@ export const MusicCoverContainer = styled.View`
 export const MusicCover = styled.Image`
   width: 70px;
   height: 70px;
-  border-radius: 12px;
+  border-radius: 35px;
   margin: auto 5px;
 `;
 
@@ -37,11 +38,19 @@ export const MusicNameContainer = styled.View`
 export const MusicName = styled.Text<{ isPlaying?: boolean }>`
   max-height: 40px;
   font-family: ${fonts.name};
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 10px;
   flex: 1;
   color: ${({ theme, isPlaying }) => isPlaying ? theme.colors.primary : theme.colors.black};
 `;
+
+export const MusicArtistContainer = styled(MusicNameContainer)``
+
+export const MusicArtist = styled(MusicName)`
+  font-size: 11px;
+  margin-top: 0;
+  color: #777;
+`
 
 export const MusicPlayingAnimationContainer = styled.View`
   align-items: center;

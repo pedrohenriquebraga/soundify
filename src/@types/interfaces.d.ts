@@ -4,4 +4,6 @@ export interface IMusicData {
   path: string;
   duration: number;
   albumId: string;
+  cover: string;
+  artist: string;
 }

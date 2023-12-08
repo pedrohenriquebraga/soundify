@@ -3,6 +3,7 @@ import { useTheme } from "styled-components";
 import {
   MiniPlayerActionButton,
   MiniPlayerActionContainer,
+  MiniPlayerArtist,
   MiniPlayerContainer,
   MiniPlayerContentContainer,
   MiniPlayerCover,
@@ -15,6 +16,8 @@ import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { usePlayer } from "../../contexts/player";
 import { MotiView } from "moti";
+import { LinearGradient } from "expo-linear-gradient";
+import { Pressable, TouchableOpacity } from "react-native";
 
 const MiniPlayer: React.FC = () => {
   const {
@@ -34,23 +37,32 @@ const MiniPlayer: React.FC = () => {
   if (!currentMusic) return <></>;
 
   return (
-    <MiniPlayerContainer activeOpacity={0.7} onPress={handleGoMusicPlayer}>
+    <MiniPlayerContainer
+      start={{ x: 0.3, y: 0 }}
+      end={{ x: 1.8, y: 0.5 }}
+      colors={[colors.light_shape, colors.primary]}
+      style={{ flex: 1 }}
+    >
+      <TouchableOpacity
+        style={{ flexDirection: "row", alignItems: "center" }}
+        activeOpacity={0.7}
+        onPress={handleGoMusicPlayer}
+      >
         <MiniPlayerLeftSide>
           <MiniPlayerCoverContainer>
-            <MaterialIcons
-              name="music-note"
-              size={60}
-              color={colors.secondary}
+            <MiniPlayerCover
+              source={
+                currentMusic.cover
+                  ? { uri: currentMusic.cover }
+                  : require("../../assets/artwork.png")
+              }
             />
           </MiniPlayerCoverContainer>
           <MiniPlayerContentContainer>
-            <MiniPlayerTitle>
-              <Feather name="music" size={10} color={colors.primary} /> Tocando
-              agora...
-            </MiniPlayerTitle>
             <MiniPlayerMusicName numberOfLines={1}>
-              {currentMusic?.name.split(".")[0]}
+              {currentMusic.name}
             </MiniPlayerMusicName>
+            <MiniPlayerArtist>{currentMusic.artist}</MiniPlayerArtist>
           </MiniPlayerContentContainer>
         </MiniPlayerLeftSide>
 
@@ -58,21 +70,22 @@ const MiniPlayer: React.FC = () => {
           <MiniPlayerActionButton onPress={handlePrevMusic}>
             <MaterialIcons
               name="skip-previous"
-              size={30}
+              size={25}
               color={colors.black}
             />
           </MiniPlayerActionButton>
           <MiniPlayerActionButton onPress={playAndPauseMusic}>
             <MaterialIcons
               name={isPlaying ? "pause" : "play-arrow"}
-              size={30}
+              size={25}
               color={colors.black}
             />
           </MiniPlayerActionButton>
           <MiniPlayerActionButton onPress={handleNextMusic}>
-            <MaterialIcons name="skip-next" size={30} color={colors.black} />
+            <MaterialIcons name="skip-next" size={25} color={colors.black} />
           </MiniPlayerActionButton>
         </MiniPlayerActionContainer>
+      </TouchableOpacity>
     </MiniPlayerContainer>
   );
 };

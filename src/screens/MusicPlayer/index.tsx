@@ -3,9 +3,11 @@ import Header from "../../components/Header";
 import {
   Blur,
   Container,
+  MusicArtist,
   MusicControllerButton,
   MusicControllers,
   MusicControllersContainer,
+  MusicCover,
   MusicCoverContainer,
   MusicDuration,
   MusicDurationContainer,
@@ -40,17 +42,23 @@ const MusicPlayer: React.FC = () => {
   return (
     <>
       <Header title="Tocando agora" showBack />
-      <Container>
-        <Blur blurType="dark" blurAmount={7} />
+      <Container
+        start={{ x: 0.5, y: 0.7 }}
+        colors={[colors.background, colors.primary]}
+      >
         <MusicInfosContainer>
           <MusicCoverContainer>
-            <MaterialIcons
-              name="music-note"
-              size={300}
-              color={colors.secondary}
+            <MusicCover
+              resizeMode="contain"
+              source={
+                currentMusic.cover
+                  ? { uri: currentMusic.cover }
+                  : require("../../assets/artwork.png")
+              }
             />
           </MusicCoverContainer>
-          <MusicName numberOfLines={2}>{currentMusic?.name}</MusicName>
+          <MusicName numberOfLines={1}>{currentMusic?.name}</MusicName>
+          <MusicArtist>{currentMusic.artist}</MusicArtist>
         </MusicInfosContainer>
         <MusicControllersContainer>
           <MusicSeekContainer>
@@ -60,7 +68,7 @@ const MusicPlayer: React.FC = () => {
               value={useProgress().position}
               thumbTintColor={colors.secondary}
               minimumTrackTintColor={colors.secondary}
-              maximumTrackTintColor={colors.light_shape}
+              maximumTrackTintColor={colors.heading}
               onSlidingComplete={handleSeek}
             />
             <MusicDurationContainer>
@@ -97,7 +105,7 @@ const MusicPlayer: React.FC = () => {
             <MaterialIcons
               name="loop"
               size={25}
-              color={isLooped ? colors.primary : colors.black}
+              color={isLooped ? colors.secondary : colors.black}
             />
           </MusicExtraControllerButton>
           <MusicExtraControllerButton onPress={handleMute}>

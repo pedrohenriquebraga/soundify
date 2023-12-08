@@ -5,8 +5,11 @@ import { IMusicData } from "../../../@types/interfaces";
 import { usePlayer } from "../../../contexts/player";
 import { secondsToTime } from "../../../utils/time";
 import {
+  MusicArtist,
+  MusicArtistContainer,
   MusicButton,
   MusicContentContainer,
+  MusicCover,
   MusicCoverContainer,
   MusicDuration,
   MusicName,
@@ -32,7 +35,14 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
   return (
     <MusicButton onPress={() => handleSelectMusic(music.index)}>
       <MusicCoverContainer>
-        <MaterialIcons name="music-note" size={60} color={colors.secondary} />
+        <MusicCover
+          resizeMode="cover"
+          source={
+            music.cover
+              ? { uri: music.cover }
+              : require("../../../assets/artwork.png")
+          }
+        />
       </MusicCoverContainer>
       <MusicContentContainer>
         <MusicNameContainer>
@@ -40,7 +50,7 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
             numberOfLines={2}
             isPlaying={music.path === currentMusicPath}
           >
-            {music.name.split(".")[0]}
+            {music.name}
           </MusicName>
           {music.path === currentMusicPath && (
             <MusicPlayingAnimationContainer>
@@ -53,6 +63,9 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
             </MusicPlayingAnimationContainer>
           )}
         </MusicNameContainer>
+        <MusicArtistContainer>
+          <MusicArtist>{music.artist}</MusicArtist>
+        </MusicArtistContainer>
         <MusicDuration>{secondsToTime(music.duration)}</MusicDuration>
       </MusicContentContainer>
     </MusicButton>

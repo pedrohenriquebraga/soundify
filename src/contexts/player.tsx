@@ -8,6 +8,7 @@ import {
   useProgress,
 } from "react-native-track-player";
 import { IMusicData } from "../@types/interfaces";
+import jsmediatags from "jsmediatags";
 
 interface IPlayerContext {
   allMusics: IMusicData[];
@@ -30,8 +31,10 @@ interface IPlayerContext {
 
 interface ICurrentMusic {
   name: string;
+  artist: string;
   index: number;
   duration: number;
+  cover?: string;
 }
 
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
@@ -51,7 +54,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   useEffect(() => {
     (async () => {
       const assets = await getMusicAssets();
-      const musics = assets.map(processAssetMusic);
+      const musics = await Promise.all(assets.map(processAssetMusic));
 
       await TrackPlayer.add(
         musics.map((music) => {
@@ -62,7 +65,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
             url: music.path,
             duration: music.duration,
             contentType: music.contentType,
-            artwork: require("../assets/artwork.png"),
+            artwork: music.cover || require("../assets/artwork.png"),
           };
         })
       );
@@ -78,14 +81,17 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         async (data) => {
           const currentTrack = await TrackPlayer.getCurrentTrack();
 
-          if (currentMusic && currentTrack === currentMusic.index)
-            return
+          if (currentMusic && currentTrack === currentMusic.index) return;
 
-          setCurrentMusic({
+          const track = await TrackPlayer.getTrack(currentTrack);
+
+          setCurrentMusic((old) => ({
             name: data.title,
+            artist: track.artist,
             index: currentTrack,
-            duration,
-          });
+            duration: duration,
+            cover: track.artwork ? String(track.artwork) : undefined,
+          }));
         }
       );
 
@@ -99,16 +105,61 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     })();
   }, []);
 
-  const processAssetMusic = (music: MediaLibrary.Asset, index: number) => {
+  const processAssetMusic = async (
+    music: MediaLibrary.Asset,
+    index: number
+  ) => {
+    const { title, artist, cover } = await new Promise<{
+      title: string;
+      artist: string;
+      cover: string;
+    }>((resolve) => {
+      new jsmediatags.Reader(music.uri.replace("file:///", "/"))
+        .setTagsToRead(["title", "artist", "picture"])
+        .read({
+          onSuccess(data) {
+            const cover = data.tags.picture;
+            let coverPath = "";
+
+            if (cover.data) {
+              const coverBase64 = cover.data
+                .map((d) => String.fromCharCode(d))
+                .join("");
+
+              coverPath = `data:${cover.format};base64,${Buffer.from(
+                coverBase64,
+                "binary"
+              ).toString("base64")}`;
+            }
+
+            resolve({
+              artist: data.tags.artist,
+              title: data.tags.title,
+              cover: coverPath,
+            });
+          },
+          onError(error) {
+            console.warn(error);
+
+            resolve({
+              title: "",
+              artist: "",
+              cover: "",
+            });
+          },
+        });
+    });
+
     const processedMusic = {
       index,
-      name: music.filename.slice(0, music.filename.lastIndexOf(".")),
-      artist: "Artista Desconhecido",
+      name: title,
+      artist,
       path: music.uri,
       duration: music.duration,
       albumId: music.albumId,
       contentType: music.mediaType,
       date: music.creationTime,
+      cover,
     };
 
     return processedMusic;
@@ -120,7 +171,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         first: 30,
         mediaType: "audio",
         after: nextMusicPage || undefined,
-        sortBy: "duration",
+        sortBy: "default",
       });
 
     setHasMoreMusics(hasNextPage);
@@ -135,8 +186,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     setFetchingMusics(true);
     const assets = await getMusicAssets();
     const queueSize = (await TrackPlayer.getQueue()).length;
-    const newMusics = assets.map((a, index) =>
-      processAssetMusic(a, index + queueSize)
+    const newMusics = await Promise.all(
+      assets.map(
+        async (a, index) => await processAssetMusic(a, index + queueSize)
+      )
     );
 
     await TrackPlayer.add(
@@ -144,11 +197,11 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         return {
           title: music.name,
           album: music.albumId,
-          artist: "Artista Desconhecido",
+          artist: music.artist,
           url: music.path,
           duration: music.duration,
           contentType: music.contentType,
-          artwork: require("../assets/artwork.png"),
+          artwork: music.cover || require("../assets/artwork.png"),
         };
       })
     );
@@ -176,8 +229,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     if (currentMusic.index - 1 < 0) {
       setCurrentMusic({
         name: allMusics[allMusics.length - 1].name,
+        artist: allMusics[allMusics.length - 1].artist,
         index: allMusics.length - 1,
         duration,
+        cover: allMusics[allMusics.length - 1].cover,
       });
       await TrackPlayer.skip(allMusics.length - 1);
       return;
@@ -185,8 +240,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
     setCurrentMusic((old) => ({
       name: allMusics[old.index - 1].name,
+      artist: allMusics[old.index - 1].artist,
       index: old.index - 1,
       duration,
+      cover: allMusics[old.index - 1].cover,
     }));
     await TrackPlayer.skipToPrevious();
     await TrackPlayer.play();
@@ -196,8 +253,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     if (currentMusic.index + 1 >= allMusics.length) {
       setCurrentMusic({
         name: allMusics[0].name,
+        artist: allMusics[0].artist,
         index: 0,
         duration,
+        cover: allMusics[0].cover,
       });
       await TrackPlayer.skip(0);
       return;
@@ -205,8 +264,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
     setCurrentMusic((old) => ({
       name: allMusics[old.index + 1].name,
+      artist: allMusics[old.index + 1].artist,
       index: old.index + 1,
       duration,
+      cover: allMusics[old.index + 1].cover,
     }));
     await TrackPlayer.skipToNext();
     await TrackPlayer.play();
@@ -227,12 +288,13 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const handleSelectMusic = async (trackIndex: number) => {
     setCurrentMusic((old) => ({
       name: allMusics[trackIndex].name,
+      artist: allMusics[trackIndex].artist,
       index: trackIndex,
       duration,
+      cover: allMusics[trackIndex].cover,
     }));
     await TrackPlayer.skip(trackIndex);
     await TrackPlayer.play();
-
   };
 
   const handleSeek = async (position: number) => {
