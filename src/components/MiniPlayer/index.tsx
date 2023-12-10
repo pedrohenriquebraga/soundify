@@ -38,13 +38,13 @@ const MiniPlayer: React.FC = () => {
 
   return (
     <MiniPlayerContainer
-      start={{ x: 0.3, y: 0 }}
-      end={{ x: 1.8, y: 0.5 }}
+      start={{ x: 0.5, y: 0 }}
+      end={{ x: 1.9, y: 0.3 }}
       colors={[colors.light_shape, colors.primary]}
       style={{ flex: 1 }}
     >
       <TouchableOpacity
-        style={{ flexDirection: "row", alignItems: "center" }}
+        style={{ flexDirection: "row", alignItems: "center", padding: 5 }}
         activeOpacity={0.7}
         onPress={handleGoMusicPlayer}
       >
@@ -70,19 +70,19 @@ const MiniPlayer: React.FC = () => {
           <MiniPlayerActionButton onPress={handlePrevMusic}>
             <MaterialIcons
               name="skip-previous"
-              size={25}
+              size={30}
               color={colors.black}
             />
           </MiniPlayerActionButton>
           <MiniPlayerActionButton onPress={playAndPauseMusic}>
             <MaterialIcons
               name={isPlaying ? "pause" : "play-arrow"}
-              size={25}
+              size={30}
               color={colors.black}
             />
           </MiniPlayerActionButton>
           <MiniPlayerActionButton onPress={handleNextMusic}>
-            <MaterialIcons name="skip-next" size={25} color={colors.black} />
+            <MaterialIcons name="skip-next" size={30} color={colors.black} />
           </MiniPlayerActionButton>
         </MiniPlayerActionContainer>
       </TouchableOpacity>

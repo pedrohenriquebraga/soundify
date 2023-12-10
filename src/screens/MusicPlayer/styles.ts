@@ -2,10 +2,14 @@ import styled from "styled-components/native";
 import fonts from "../../styles/fonts";
 import Slider from "@react-native-community/slider"
 import { LinearGradient } from "expo-linear-gradient";
+import Marquee from "react-native-marquee";
+import {BlurView} from "@react-native-community/blur";
 
 export const Container = styled(LinearGradient)`
   background-color: ${({ theme }) => theme.colors.background};
   flex: 1;
+  padding: 12px;
+  z-index: -1;
 `;
 
 export const MusicInfosContainer = styled.View`
@@ -23,7 +27,7 @@ export const MusicCover = styled.Image`
   border-radius: 150px;
 `;
 
-export const MusicName = styled.Text`
+export const MusicName = styled(Marquee)`
   font-family: ${fonts.heading};
   font-size: 25px;
   text-align: left;
@@ -33,16 +37,18 @@ export const MusicName = styled.Text`
 
 export const MusicArtist = styled(MusicName)`
   color: ${({ theme }) => theme.colors.heading};
-  font-size: 22px;
+  font-size: 18px;
   margin-top: 0;
+  font-family: ${fonts.name};
 `;
 
 export const MusicControllersContainer = styled.View`
   margin: 0 5px;
+  elevation: 3;
 `;
 
 export const MusicSeekContainer = styled.View`
-  margin: 10px 0px;
+  margin: 5px 0px;
 `;
 
 export const MusicSeek = styled(Slider)``;
@@ -79,15 +85,14 @@ export const MusicExtraControllersContainer = styled.View`
   justify-content: space-between;
   align-items: center;
   bottom: 0;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-`;
+  margin-left: 15px;
+  `;
 
 export const MusicExtraControllerButton = styled.TouchableOpacity`
-  margin: 0 10px;
+  align-items: center;
 `;
 
-export const Blur = styled.View`
+export const Blur = styled(BlurView)`
   position: absolute;
   top: 0;
   left: 0;

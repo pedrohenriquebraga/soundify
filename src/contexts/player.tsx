@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import TrackPlayer from "../services/trackPlayer";
 import * as MediaLibrary from "expo-media-library";
 import {
@@ -9,6 +15,8 @@ import {
 } from "react-native-track-player";
 import { IMusicData } from "../@types/interfaces";
 import jsmediatags from "jsmediatags";
+import Storage from "@react-native-async-storage/async-storage";
+import { encode } from "base64-arraybuffer";
 
 interface IPlayerContext {
   allMusics: IMusicData[];
@@ -37,6 +45,10 @@ interface ICurrentMusic {
   cover?: string;
 }
 
+type cachedCovers = {
+  [key: string]: string;
+};
+
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
 
 const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
@@ -53,24 +65,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      const assets = await getMusicAssets();
-      const musics = await Promise.all(assets.map(processAssetMusic));
-
-      await TrackPlayer.add(
-        musics.map((music) => {
-          return {
-            title: music.name,
-            artist: music.artist,
-            album: music.albumId,
-            url: music.path,
-            duration: music.duration,
-            contentType: music.contentType,
-            artwork: music.cover || require("../assets/artwork.png"),
-          };
-        })
-      );
-
-      setAllMusics(musics);
+      await getMoreMusics()
     })();
   }, []);
 
@@ -82,15 +77,16 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
           const currentTrack = await TrackPlayer.getCurrentTrack();
 
           if (currentMusic && currentTrack === currentMusic.index) return;
-
-          const track = await TrackPlayer.getTrack(currentTrack);
+          
+	  const track = await TrackPlayer.getTrack(currentTrack);
 
           setCurrentMusic((old) => ({
             name: data.title,
             artist: track.artist,
             index: currentTrack,
             duration: duration,
-            cover: track.artwork ? String(track.artwork) : undefined,
+            cover:
+              typeof track.artwork === "string" ? track.artwork : undefined,
           }));
         }
       );
@@ -117,19 +113,14 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       new jsmediatags.Reader(music.uri.replace("file:///", "/"))
         .setTagsToRead(["title", "artist", "picture"])
         .read({
-          onSuccess(data) {
-            const cover = data.tags.picture;
+          async onSuccess(data) {
             let coverPath = "";
 
-            if (cover.data) {
-              const coverBase64 = cover.data
-                .map((d) => String.fromCharCode(d))
-                .join("");
+            if (data.tags.picture.format) {
 
-              coverPath = `data:${cover.format};base64,${Buffer.from(
-                coverBase64,
-                "binary"
-              ).toString("base64")}`;
+              const cachedCover = await Storage.getItem(music.filename);
+              // @ts-ignore
+              coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
             }
 
             resolve({
@@ -168,7 +159,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const getMusicAssets = async () => {
     const { assets, endCursor, hasNextPage } =
       await MediaLibrary.getAssetsAsync({
-        first: 30,
+        first: 4,
         mediaType: "audio",
         after: nextMusicPage || undefined,
         sortBy: "default",
@@ -185,14 +176,14 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
     setFetchingMusics(true);
     const assets = await getMusicAssets();
-    const queueSize = (await TrackPlayer.getQueue()).length;
+    const queueSize = allMusics.length;
     const newMusics = await Promise.all(
       assets.map(
         async (a, index) => await processAssetMusic(a, index + queueSize)
       )
     );
 
-    await TrackPlayer.add(
+    TrackPlayer.add(
       newMusics.map((music) => {
         return {
           title: music.name,

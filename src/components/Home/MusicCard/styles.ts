@@ -65,7 +65,7 @@ export const MusicPlayingAnimation = styled(AnimatedLottieView)`
 
 export const MusicDuration = styled.Text`
   font-family: ${fonts.text};
-  font-size: 10px;
+  font-size: 12px;
   color: ${({ theme }) => theme.colors.heading};
   text-align: right;
   margin-top: 5px;

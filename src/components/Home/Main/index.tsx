@@ -57,11 +57,10 @@ const Main: React.FC = () => {
       data={data}
       stickyHeaderIndices={indices}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: currentMusic ? 90 : 0 }}
+      contentContainerStyle={{ paddingBottom: currentMusic ? 80 : 0 }}
       keyExtractor={(item) => item.key}
       ListFooterComponent={fetchingMusics && hasMoreMusics && <Loading />}
       renderItem={({ item }) => item.render()}
-      onEndReachedThreshold={0.1}
       onEndReached={getMoreMusics}
     />
   );

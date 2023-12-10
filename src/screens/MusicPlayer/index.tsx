@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../components/Header";
 import {
   Blur,
@@ -18,10 +18,12 @@ import {
   MusicSeek,
   MusicSeekContainer,
 } from "./styles";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
 import { usePlayer } from "../../contexts/player";
 import { secondsToTime } from "../../utils/time";
+
+import imageColors from "react-native-image-colors";
 
 const MusicPlayer: React.FC = () => {
   const {
@@ -38,13 +40,39 @@ const MusicPlayer: React.FC = () => {
     handleSeek,
   } = usePlayer();
   const { colors } = useTheme();
+  const [coverColor, setCoverColor] = useState(colors.primary);
+  const [playColor, setPlayColor] = useState(colors.primary);
+
+  useEffect(() => {
+    (async () => {
+      if (!currentMusic.cover)
+        return 
+
+      const cachedColors = imageColors.cache.getItem(currentMusic.name) as any;
+      if (cachedColors) {
+        setCoverColor(cachedColors.average as string);
+        setPlayColor(cachedColors.vibrant as string);
+        return;
+      }
+
+      const coverColors = (await imageColors.getColors(currentMusic?.cover, {
+        cache: true,
+        fallback: colors.primary,
+        key: currentMusic.name,
+        // @ts-ignore
+      })) as any;
+
+      setCoverColor(coverColors.average as string);
+      setPlayColor(coverColors.vibrant as string);
+    })();
+  }, [currentMusic.cover, currentMusic.name]);
 
   return (
     <>
       <Header title="Tocando agora" showBack />
       <Container
-        start={{ x: 0.5, y: 0.7 }}
-        colors={[colors.background, colors.primary]}
+        start={{ x: 0.5, y: 0.5 }}
+        colors={[colors.background, coverColor]}
       >
         <MusicInfosContainer>
           <MusicCoverContainer>
@@ -57,7 +85,9 @@ const MusicPlayer: React.FC = () => {
               }
             />
           </MusicCoverContainer>
-          <MusicName numberOfLines={1}>{currentMusic?.name}</MusicName>
+          <MusicName numberOfLines={1} speed={0.3} consecutive>
+            {currentMusic?.name}
+          </MusicName>
           <MusicArtist>{currentMusic.artist}</MusicArtist>
         </MusicInfosContainer>
         <MusicControllersContainer>
@@ -73,7 +103,7 @@ const MusicPlayer: React.FC = () => {
             />
             <MusicDurationContainer>
               <MusicDuration>
-                {secondsToTime(useProgress(800).position)}
+                {secondsToTime(useProgress(250).position)}
               </MusicDuration>
               <MusicDuration>
                 {secondsToTime(useProgress().duration)}
@@ -84,19 +114,19 @@ const MusicPlayer: React.FC = () => {
             <MusicControllerButton onPress={handlePrevMusic}>
               <MaterialIcons
                 name="skip-previous"
-                size={45}
+                size={35}
                 color={colors.black}
               />
             </MusicControllerButton>
             <MusicControllerButton onPress={playAndPauseMusic}>
               <MaterialIcons
                 name={isPlaying ? "pause-circle-filled" : "play-circle-fill"}
-                size={65}
-                color={colors.primary}
+                size={75}
+                color={playColor}
               />
             </MusicControllerButton>
             <MusicControllerButton onPress={handleNextMusic}>
-              <MaterialIcons name="skip-next" size={45} color={colors.black} />
+              <MaterialIcons name="skip-next" size={35} color={colors.black} />
             </MusicControllerButton>
           </MusicControllers>
         </MusicControllersContainer>
@@ -104,14 +134,14 @@ const MusicPlayer: React.FC = () => {
           <MusicExtraControllerButton onPress={handleLoop}>
             <MaterialIcons
               name="loop"
-              size={25}
-              color={isLooped ? colors.secondary : colors.black}
+              size={30}
+              color={isLooped ? playColor : colors.black}
             />
           </MusicExtraControllerButton>
           <MusicExtraControllerButton onPress={handleMute}>
             <MaterialIcons
               name={isMuted ? "volume-off" : "volume-up"}
-              size={25}
+              size={30}
               color={colors.black}
             />
           </MusicExtraControllerButton>

@@ -9,7 +9,8 @@ export const MiniPlayerContainer = styled(LinearGradient)`
   flex-direction: row;
   width: 100%;
   padding: 10px;
-  border-radius: 30px;
+  border-top-right-radius: 30px;
+  border-top-left-radius: 30px;
   bottom: 0;
   z-index: 5;
   elevation: 3;
