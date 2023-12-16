@@ -1,4 +1,4 @@
-# Soundify
+# 🎶 Soundify
 
 ![Soundify](https://github.com/pedrohenriquebraga/portfolio/blob/main/public/projects/soundify-project.jpg)
 
