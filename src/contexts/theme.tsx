@@ -1,50 +1,78 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { ThemeProvider } from "styled-components/native";
 import { usePersistedState } from "../hooks/usePersistedState";
 import dark from "../styles/themes/dark";
 import light from "../styles/themes/light";
-
-interface ThemeControllerContext {
-  theme: typeof dark;
-  toggleTheme: () => unknown;
-  currentThemeName: string;
+import { useColorScheme, StatusBar } from "react-native";
+interface IThemeControllerContext {
+  toggleTheme: (theme?: string) => unknown;
+  currentThemeName: "light" | "dark" | string;
 }
 
-const ThemeControllerContext = createContext<ThemeControllerContext>(
-  {} as ThemeControllerContext
+const ThemeControllerContext = createContext<IThemeControllerContext>(
+  {} as IThemeControllerContext
 );
 
 const ThemeControllerProvider: React.FC = ({ children }) => {
-  const [theme, setTheme] = useState(dark)
-  const [themeTitle, setThemeTitle] = usePersistedState<string>(
-    "@SoundfyPlayer:theme",
-    dark.title
+  const defaultTheme = useColorScheme();
+  const [theme, setTheme, themeFetched] = usePersistedState(
+    "@Odin:theme",
+    defaultTheme === "light" ? light : dark
+  );
+  const toggleTheme = useCallback(
+    (themeName?: "light" | "dark") => {
+      if (themeName) {
+        if (themeName !== theme.title) {
+          setTheme(themeName === "light" ? light : dark);
+        }
+        return;
+      }
+
+      setTheme(theme.title === "light" ? dark : light);
+    },
+    [theme, theme.title]
   );
 
   useEffect(() => {
-    setTheme(themeTitle === "dark" ? dark : light);
-  }, [themeTitle]);
+    setTheme((old) => (old.title === "light" ? light : dark));
+  }, [themeFetched]);
 
-  const toggleTheme = () => {
-    setThemeTitle(themeTitle === light.title ? dark.title : light.title);
-  }
+  useEffect(() => {
+    if (defaultTheme !== theme.title) {
+      setTheme(defaultTheme === "light" ? light : dark);
+    }
+  }, [defaultTheme]);
+
+  useEffect(() => {
+    StatusBar.setBarStyle(
+      theme.title === "light" ? "dark-content" : "light-content"
+    );
+    StatusBar.setBackgroundColor(theme.colors.background);
+  }, [theme]);
 
   return (
+    // @ts-ignore
     <ThemeControllerContext.Provider
       value={{
-        theme,
         toggleTheme,
-        currentThemeName: themeTitle,
+        currentThemeName: theme.title,
       }}
     >
+      {/* @ts-ignore */}
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </ThemeControllerContext.Provider>
   );
 };
 
 const useThemeController = () => {
-  return useContext(ThemeControllerContext)
-}
-
+  return useContext(ThemeControllerContext);
+};
 
 export { ThemeControllerProvider, useThemeController };

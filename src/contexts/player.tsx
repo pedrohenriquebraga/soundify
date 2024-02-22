@@ -120,7 +120,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
               const cachedCover = await Storage.getItem(music.filename);
               // @ts-ignore
-              coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
+              // coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
             }
 
             resolve({
@@ -159,16 +159,15 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const getMusicAssets = async () => {
     const { assets, endCursor, hasNextPage } =
       await MediaLibrary.getAssetsAsync({
-        first: 4,
+        first: 10,
         mediaType: "audio",
         after: nextMusicPage || undefined,
-        sortBy: "default",
       });
 
     setHasMoreMusics(hasNextPage);
-    setNextMusicPage(endCursor);
+    setNextMusicPage(endCursor);    
 
-    return assets;
+    return assets.filter(a => a.duration > 30);
   };
 
   const getMoreMusics = async () => {
@@ -181,7 +180,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       assets.map(
         async (a, index) => await processAssetMusic(a, index + queueSize)
       )
-    );
+    );    
 
     TrackPlayer.add(
       newMusics.map((music) => {
@@ -293,6 +292,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   };
 
   return (
+    // @ts-ignore
     <PlayerContext.Provider
       value={{
         allMusics,

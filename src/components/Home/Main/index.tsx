@@ -62,6 +62,7 @@ const Main: React.FC = () => {
       ListFooterComponent={fetchingMusics && hasMoreMusics && <Loading />}
       renderItem={({ item }) => item.render()}
       onEndReached={getMoreMusics}
+      onEndReachedThreshold={0.5}
     />
   );
 };
