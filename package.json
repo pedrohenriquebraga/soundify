@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:release": "cd android && gradlew assembleRelease"
   },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.2.2",
