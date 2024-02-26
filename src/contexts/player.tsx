@@ -45,9 +45,9 @@ interface ICurrentMusic {
   cover?: string;
 }
 
-type cachedCovers = {
-  [key: string]: string;
-};
+// type cachedCovers = {
+//   [key: string]: string;
+// };
 
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
 
@@ -65,7 +65,24 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      await getMoreMusics()
+      const assets = await getMusicAssets();
+      const musics = await Promise.all(assets.map(processAssetMusic));
+
+      await TrackPlayer.add(
+        musics.map((music) => {
+          return {
+            title: music.name,
+            artist: music.artist,
+            album: music.albumId,
+            url: music.path,
+            duration: music.duration,
+            contentType: music.contentType,
+            artwork: music.cover || require("../assets/artwork.png"),
+          };
+        })
+      );
+
+      setAllMusics(musics);
     })();
   }, []);
 
@@ -77,8 +94,8 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
           const currentTrack = await TrackPlayer.getCurrentTrack();
 
           if (currentMusic && currentTrack === currentMusic.index) return;
-          
-	  const track = await TrackPlayer.getTrack(currentTrack);
+
+          const track = await TrackPlayer.getTrack(currentTrack);
 
           setCurrentMusic((old) => ({
             name: data.title,
@@ -111,17 +128,17 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       cover: string;
     }>((resolve) => {
       new jsmediatags.Reader(music.uri.replace("file:///", "/"))
-        .setTagsToRead(["title", "artist", "picture"])
+        .setTagsToRead(["title", "artist"])
         .read({
           async onSuccess(data) {
             let coverPath = "";
 
-            if (data.tags.picture.format) {
+            // if (data.tags.picture.format) {
 
-              const cachedCover = await Storage.getItem(music.filename);
-              // @ts-ignore
-              // coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
-            }
+            //   const cachedCover = await Storage.getItem(music.filename);
+            //   // @ts-ignore
+            //   // coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
+            // }
 
             resolve({
               artist: data.tags.artist,
@@ -159,15 +176,15 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const getMusicAssets = async () => {
     const { assets, endCursor, hasNextPage } =
       await MediaLibrary.getAssetsAsync({
-        first: 10,
+        first: 25,
         mediaType: "audio",
         after: nextMusicPage || undefined,
       });
 
     setHasMoreMusics(hasNextPage);
-    setNextMusicPage(endCursor);    
+    setNextMusicPage(endCursor);
 
-    return assets.filter(a => a.duration > 30);
+    return assets;
   };
 
   const getMoreMusics = async () => {
@@ -180,7 +197,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       assets.map(
         async (a, index) => await processAssetMusic(a, index + queueSize)
       )
-    );    
+    );
 
     TrackPlayer.add(
       newMusics.map((music) => {

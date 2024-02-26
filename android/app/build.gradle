@@ -113,9 +113,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.soundify"
+    namespace "com.flowapps.soundify"
     defaultConfig {
-        applicationId "com.soundify"
+        applicationId "com.flowapps.soundify"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

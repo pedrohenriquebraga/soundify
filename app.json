@@ -6,6 +6,11 @@
     "jsEngine": "hermes",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a62b44c4-2658-48fb-af63-dad6a5ff7f76"
+      }
+    }
   }
 }

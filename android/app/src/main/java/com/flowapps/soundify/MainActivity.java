@@ -1,4 +1,4 @@
-package com.soundify;
+package com.flowapps.soundify;
 
 import android.os.Build;
 import android.os.Bundle;
