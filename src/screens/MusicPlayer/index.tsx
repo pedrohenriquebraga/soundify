@@ -40,13 +40,12 @@ const MusicPlayer: React.FC = () => {
     handleSeek,
   } = usePlayer();
   const { colors } = useTheme();
-  const [coverColor, setCoverColor] = useState(colors.primary);
+  const [coverColor, setCoverColor] = useState(colors.secondary);
   const [playColor, setPlayColor] = useState(colors.primary);
 
   useEffect(() => {
     (async () => {
-      if (!currentMusic.cover)
-        return 
+      if (!currentMusic.cover) return;
 
       const cachedColors = imageColors.cache.getItem(currentMusic.name) as any;
       if (cachedColors) {
@@ -57,7 +56,7 @@ const MusicPlayer: React.FC = () => {
 
       const coverColors = (await imageColors.getColors(currentMusic?.cover, {
         cache: true,
-        fallback: colors.primary,
+        fallback: colors.secondary,
         key: currentMusic.name,
         // @ts-ignore
       })) as any;
@@ -96,8 +95,8 @@ const MusicPlayer: React.FC = () => {
               minimumValue={0}
               maximumValue={useProgress().duration}
               value={useProgress().position}
-              thumbTintColor={colors.secondary}
-              minimumTrackTintColor={colors.secondary}
+              thumbTintColor={colors.primary}
+              minimumTrackTintColor={colors.primary}
               maximumTrackTintColor={colors.heading}
               onSlidingComplete={handleSeek}
             />

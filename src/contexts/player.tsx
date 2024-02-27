@@ -51,6 +51,8 @@ interface ICurrentMusic {
 
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
 
+const MAX_MUSICS_PER_REQUEST = 15
+
 const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [allMusics, setAllMusics] = useState<IMusicData[]>([]);
   const [currentMusic, setCurrentMusic] = useState<ICurrentMusic>();
@@ -65,6 +67,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
+      setFetchingMusics(true)
       const assets = await getMusicAssets();
       const musics = await Promise.all(assets.map(processAssetMusic));
 
@@ -83,6 +86,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       );
 
       setAllMusics(musics);
+      setFetchingMusics(false)
     })();
   }, []);
 
@@ -128,10 +132,13 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       cover: string;
     }>((resolve) => {
       new jsmediatags.Reader(music.uri.replace("file:///", "/"))
-        .setTagsToRead(["title", "artist"])
+        .setTagsToRead(["title", "artist", "album"])
         .read({
           async onSuccess(data) {
-            let coverPath = "";
+            let coverPath = "";  
+            
+            console.log(data.tags.album);
+            
 
             // if (data.tags.picture.format) {
 
@@ -176,7 +183,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const getMusicAssets = async () => {
     const { assets, endCursor, hasNextPage } =
       await MediaLibrary.getAssetsAsync({
-        first: 25,
+        first: MAX_MUSICS_PER_REQUEST,
         mediaType: "audio",
         after: nextMusicPage || undefined,
       });
