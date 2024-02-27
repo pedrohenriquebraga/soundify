@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import TrackPlayer from "../services/trackPlayer";
 import * as MediaLibrary from "expo-media-library";
 import {
@@ -15,8 +9,7 @@ import {
 } from "react-native-track-player";
 import { IMusicData } from "../@types/interfaces";
 import jsmediatags from "jsmediatags";
-import Storage from "@react-native-async-storage/async-storage";
-import { encode } from "base64-arraybuffer";
+import _ from "lodash";
 
 interface IPlayerContext {
   allMusics: IMusicData[];
