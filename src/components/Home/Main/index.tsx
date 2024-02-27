@@ -58,13 +58,13 @@ const Main: React.FC = () => {
             : [music];
       });
 
-      Object.keys(sortedMusicsByArtist).map((key) => {
+      Object.keys(sortedMusicsByArtist).sort().map((key) => {
         data.push({
           key,
           isTitle: true,
           render: () => (
             <SectionTitle>
-              <Feather name="user" size={16} /> {key}
+              <Feather name="user" size={16} /> {key.toUpperCase()}
             </SectionTitle>
           ),
         });
@@ -119,7 +119,7 @@ const Main: React.FC = () => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: currentMusic ? 80 : 0 }}
       keyExtractor={(item) => item.key}
-      ListFooterComponent={fetchingMusics && <Loading />}
+      ListFooterComponent={(fetchingMusics || loadingGroup) && <Loading />}
       renderItem={({ item }) => item.render()}
       onEndReached={getMoreMusics}
       onEndReachedThreshold={0.5}

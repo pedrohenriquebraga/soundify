@@ -51,7 +51,7 @@ interface ICurrentMusic {
 
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
 
-const MAX_MUSICS_PER_REQUEST = 15
+const MAX_MUSICS_PER_REQUEST = 15;
 
 const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [allMusics, setAllMusics] = useState<IMusicData[]>([]);
@@ -67,7 +67,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-      setFetchingMusics(true)
+      setFetchingMusics(true);
       const assets = await getMusicAssets();
       const musics = await Promise.all(assets.map(processAssetMusic));
 
@@ -86,7 +86,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       );
 
       setAllMusics(musics);
-      setFetchingMusics(false)
+      setFetchingMusics(false);
     })();
   }, []);
 
@@ -119,6 +119,8 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
           setIsPlaying(false);
         }
       });
+
+      TrackPlayer.setRepeatMode(RepeatMode.Queue);
     })();
   }, []);
 
@@ -136,7 +138,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         .setTagsToRead(["title", "artist", "year"])
         .read({
           async onSuccess(data) {
-            let coverPath = "";              
+            let coverPath = "";
 
             // if (data.tags.picture.format) {
 
@@ -159,7 +161,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
               title: "",
               artist: "",
               cover: "",
-              year: ""
+              year: "",
             });
           },
         });

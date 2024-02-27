@@ -56,7 +56,7 @@ const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
             <MusicPlayingAnimationContainer>
               <MusicPlayingAnimation
                 source={require("../../../assets/playing.json")}
-                speed={0.75}
+                speed={0.25}
                 autoPlay
                 loop
               />
