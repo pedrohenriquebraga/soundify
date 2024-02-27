@@ -84,7 +84,7 @@ const MusicPlayer: React.FC = () => {
               }
             />
           </MusicCoverContainer>
-          <MusicName numberOfLines={1} speed={0.3} consecutive>
+          <MusicName numberOfLines={1} speed={0.25} loop={false}>
             {currentMusic?.name}
           </MusicName>
           <MusicArtist>{currentMusic.artist}</MusicArtist>

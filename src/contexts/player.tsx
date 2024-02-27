@@ -126,19 +126,17 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     music: MediaLibrary.Asset,
     index: number
   ) => {
-    const { title, artist, cover } = await new Promise<{
+    const { title, artist, cover, year } = await new Promise<{
       title: string;
       artist: string;
       cover: string;
+      year: string;
     }>((resolve) => {
       new jsmediatags.Reader(music.uri.replace("file:///", "/"))
-        .setTagsToRead(["title", "artist", "album"])
+        .setTagsToRead(["title", "artist", "year"])
         .read({
           async onSuccess(data) {
-            let coverPath = "";  
-            
-            console.log(data.tags.album);
-            
+            let coverPath = "";              
 
             // if (data.tags.picture.format) {
 
@@ -150,6 +148,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
             resolve({
               artist: data.tags.artist,
               title: data.tags.title,
+              year: data.tags.year,
               cover: coverPath,
             });
           },
@@ -160,6 +159,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
               title: "",
               artist: "",
               cover: "",
+              year: ""
             });
           },
         });
@@ -174,6 +174,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       albumId: music.albumId,
       contentType: music.mediaType,
       date: music.creationTime,
+      year,
       cover,
     };
 

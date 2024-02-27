@@ -6,4 +6,5 @@ export interface IMusicData {
   albumId: string;
   cover: string;
   artist: string;
+  year: string;
 }

@@ -1,11 +1,10 @@
 import AnimatedLottieView from 'lottie-react-native';
 import styled from 'styled-components/native';
 import fonts from '../../../styles/fonts';
+import { SectionTitle } from '../Main/styles';
 
 export const HeaderContainer = styled.View`
-  flex-direction: row;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
   padding: 10px;
 `;
@@ -25,4 +24,14 @@ export const HeaderTitle = styled.Text`
   font-family: ${fonts.hero};
   font-size: 20px;
   color: ${({ theme }) => theme.colors.primary};
+`;
+
+export const HeaderSectionContainer = styled.View``;
+
+export const HeaderSectionTitle = styled(SectionTitle)`
+  margin-left: -5px;
+`;
+
+export const HeaderSelectorsContainer = styled.View`
+  margin: 15px 0px;
 `;
