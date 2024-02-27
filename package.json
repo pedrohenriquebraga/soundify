@@ -8,6 +8,7 @@
     "build:debug": "cd android && gradlew assembleDebug",
     "build:release": "cd android && gradlew assembleRelease",
     "build:release:aab": "cd android && gradlew bundleRelease",
+    "build:clean": "cd android && gradlew clean",
     "ios": "expo run:ios"
   },
   "dependencies": {
