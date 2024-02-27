@@ -53,7 +53,7 @@ const Main: React.FC = () => {
 
       allMusics.map((music) => {
         sortedMusicsByArtist[music.artist || "Desconhecido"] =
-          sortedMusicsByArtist[music.artist]
+          sortedMusicsByArtist[music.artist || "Desconhecido"]
             ? [...sortedMusicsByArtist[music.artist || "Desconhecido"], music]
             : [music];
       });
@@ -78,7 +78,7 @@ const Main: React.FC = () => {
 
       allMusics.map((music) => {
         sortedMusicsByYear[music.year || "Desconhecido"] =
-          sortedMusicsByYear[music.year]
+          sortedMusicsByYear[music.year || "Desconhecido"]
             ? [...sortedMusicsByYear[music.year || "Desconhecido"], music]
             : [music];
       });

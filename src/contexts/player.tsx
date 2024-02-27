@@ -51,7 +51,7 @@ interface ICurrentMusic {
 
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
 
-const MAX_MUSICS_PER_REQUEST = 15;
+const MAX_MUSICS_PER_REQUEST = 30;
 
 const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [allMusics, setAllMusics] = useState<IMusicData[]>([]);
