@@ -8,7 +8,11 @@ import {
   RepeatMode,
   State,
 } from "react-native-track-player/lib/constants";
-import { getMusicAssets, processAssetMusic } from "../utils/music";
+import {
+  contructObjectForTrackPlayer,
+  getMusicAssets,
+  processAssetMusic,
+} from "../utils/music";
 import { setUserPaused } from "../services";
 
 interface IPlayerContext {
@@ -19,6 +23,7 @@ interface IPlayerContext {
   isPlaying: boolean;
   isLooped: boolean;
   isMuted: boolean;
+  hasPermission: boolean;
   getMoreMusics: () => void;
   useProgress: typeof useProgress;
   playAndPauseMusic: () => void;
@@ -28,6 +33,7 @@ interface IPlayerContext {
   handleLoop: () => void;
   handleSeek: (position: number) => void;
   handleSelectMusic: (trackIndex: number) => void;
+  setHasPermission: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface ICurrentMusic {
@@ -49,72 +55,9 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isLooped, setIsLooped] = useState(false);
 
+  const [hasPermission, setHasPermission] = useState(false);
+
   const { position, duration } = useProgress(1500);
-
-  useEffect(() => {
-    (async () => {
-      setFetchingMusics(true);
-      const { assets, endCursor, hasNextPage } = await getMusicAssets();
-
-      setHasMoreMusics(hasNextPage);
-      setNextMusicPage(endCursor);
-
-      const musics = await Promise.all(assets.map(processAssetMusic));
-
-      await TrackPlayer.add(
-        musics.map((music) => {
-          return {
-            title: music.name,
-            artist: music.artist,
-            album: music.albumId,
-            url: music.path,
-            duration: music.duration,
-            contentType: music.contentType,
-            artwork: music.cover || require("../assets/artwork.png"),
-          };
-        })
-      );
-
-      setAllMusics(musics);
-      setFetchingMusics(false);
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      TrackPlayer.addEventListener(
-        Event.PlaybackMetadataReceived,
-        async (data) => {
-          const currentTrack = await TrackPlayer.getCurrentTrack();
-
-          if (currentMusic && currentTrack === currentMusic.index) return;
-
-          const track = await TrackPlayer.getTrack(currentTrack);
-
-          setCurrentMusic((old) => ({
-            name: data.title,
-            artist: track.artist,
-            index: currentTrack,
-            duration: duration,
-            cover:
-              typeof track.artwork === "string" ? track.artwork : undefined,
-          }));
-        }
-      );
-
-      TrackPlayer.addEventListener(Event.PlaybackState, async (data) => {
-        if (data.state === State.Playing) {
-          setIsPlaying(true);
-          setUserPaused(false);
-        } else if (data.state === State.Paused) {
-          setIsPlaying(false);
-          setUserPaused(true);
-        }
-      });
-
-      TrackPlayer.setRepeatMode(RepeatMode.Queue);
-    })();
-  }, []);
 
   const getMoreMusics = async () => {
     if (!hasMoreMusics || fetchingMusics) return;
@@ -132,19 +75,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       )
     );
 
-    TrackPlayer.add(
-      newMusics.map((music) => {
-        return {
-          title: music.name,
-          album: music.albumId,
-          artist: music.artist,
-          url: music.path,
-          duration: music.duration,
-          contentType: music.contentType,
-          artwork: music.cover || require("../assets/artwork.png"),
-        };
-      })
-    );
+    await TrackPlayer.add(newMusics.map(contructObjectForTrackPlayer));
 
     setAllMusics((old) => [...old, ...newMusics]);
     setFetchingMusics(false);
@@ -241,6 +172,64 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     await TrackPlayer.seekTo(position);
   };
 
+  useEffect(() => {
+    (async () => {
+
+      if (!hasPermission)
+        return
+
+      setFetchingMusics(true);
+      const { assets, endCursor, hasNextPage } = await getMusicAssets();
+
+      setHasMoreMusics(hasNextPage);
+      setNextMusicPage(endCursor);
+
+      const musics = await Promise.all(assets.map(processAssetMusic));
+      await TrackPlayer.add(musics.map(contructObjectForTrackPlayer));
+
+      setAllMusics(musics);
+      setFetchingMusics(false);
+    })();
+  }, [hasPermission]);
+
+  useEffect(() => {
+    (async () => {
+      if (!hasPermission)
+        return
+      TrackPlayer.addEventListener(
+        Event.PlaybackMetadataReceived,
+        async (data) => {
+          const currentTrack = await TrackPlayer.getCurrentTrack();
+
+          if (currentMusic && currentTrack === currentMusic.index) return;
+
+          const track = await TrackPlayer.getTrack(currentTrack);
+
+          setCurrentMusic((old) => ({
+            index: currentTrack,
+            name: data.title,
+            artist: track.artist,
+            duration: duration,
+            cover:
+              typeof track.artwork === "string" ? track.artwork : undefined,
+          }));
+        }
+      );
+
+      TrackPlayer.addEventListener(Event.PlaybackState, async (data) => {
+        if (data.state === State.Playing) {
+          setIsPlaying(true);
+          setUserPaused(false);
+        } else if (data.state === State.Paused) {
+          setIsPlaying(false);
+          setUserPaused(true);
+        }
+      });
+
+      TrackPlayer.setRepeatMode(RepeatMode.Queue);
+    })();
+  }, [hasPermission]);
+
   return (
     // @ts-ignore
     <PlayerContext.Provider
@@ -261,6 +250,8 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         isLooped,
         fetchingMusics,
         hasMoreMusics,
+        hasPermission,
+        setHasPermission
       }}
     >
       {children}

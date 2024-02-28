@@ -1,5 +1,5 @@
 import TrackPlayer from "react-native-track-player";
-import { IMusicData } from "../@types/interfaces";
+import { IMusicData, IProcessedMusic } from "../@types/interfaces";
 import * as MediaLibrary from "expo-media-library";
 import jsmediatags from "jsmediatags";
 
@@ -20,13 +20,6 @@ export const processAssetMusic = async (
       .read({
         async onSuccess(data) {
           let coverPath = "";
-
-          // if (data.tags.picture.format) {
-
-          //   const cachedCover = await Storage.getItem(music.filename);
-          //   // @ts-ignore
-          //   // coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
-          // }
 
           resolve({
             artist: data.tags.artist,
@@ -50,7 +43,7 @@ export const processAssetMusic = async (
 
   const processedMusic = {
     index,
-    name: title || ">>> Música sem nome",
+    name: title || "> Música sem nome",
     artist: artist || "Desconhecido",
     path: music.uri,
     duration: music.duration,
@@ -61,8 +54,20 @@ export const processAssetMusic = async (
     cover,
   };
 
-  return processedMusic;
+  return processedMusic as IProcessedMusic;
 };
+
+export const contructObjectForTrackPlayer = (music: IProcessedMusic) => {
+  return {
+    title: music.name,
+    artist: music.artist,
+    album: music.albumId,
+    url: music.path,
+    duration: music.duration,
+    contentType: music.contentType,
+    artwork: music.cover || require("../assets/artwork.png"),
+  };
+}
 
 export const getMusicAssets = async (nextMusicPage: MediaLibrary.AssetRef = undefined) => {
   const { assets, endCursor, hasNextPage } =
@@ -76,5 +81,5 @@ export const getMusicAssets = async (nextMusicPage: MediaLibrary.AssetRef = unde
 };
 
 export const reorganizeTracks = async (trackList: IMusicData[]) => {
-  
+  // TrackPlayer.
 }

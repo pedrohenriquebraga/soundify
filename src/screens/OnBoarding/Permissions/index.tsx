@@ -14,10 +14,12 @@ import {
   Title,
 } from "./styles";
 import { useBoarding } from "../../../contexts/boarding";
+import { usePlayer } from "../../../contexts/player";
 
 const Permissions: React.FC = () => {
   const [grantedFiles, setGrantedFiles] = useState(false);
   const { handleSetOnBoarded } = useBoarding();
+  const { setHasPermission } = usePlayer();
 
   const handleGo = async () => {
     handleSetOnBoarded();
@@ -28,6 +30,7 @@ const Permissions: React.FC = () => {
       const { granted } = await MediaLibrary.getPermissionsAsync(false);
 
       setGrantedFiles(granted);
+      setHasPermission(granted)
     })();
   }, []);
 
@@ -38,6 +41,7 @@ const Permissions: React.FC = () => {
 
     if (granted) {
       setGrantedFiles(true);
+      setHasPermission(true)
       return;
     }
 

@@ -1,3 +1,5 @@
+import * as MediaLibray from "expo-media-library"
+
 export interface IMusicData {
   index: number;
   name: string;
@@ -7,4 +9,17 @@ export interface IMusicData {
   cover: string;
   artist: string;
   year: string;
+}
+
+export interface IProcessedMusic {
+  index: number;
+  name: string;
+  artist: string;
+  path: string;
+  duration: number;
+  albumId: string;
+  contentType: MediaLibrary.MediaTypeValue;
+  date: number;
+  year: string;
+  cover: string;
 }
