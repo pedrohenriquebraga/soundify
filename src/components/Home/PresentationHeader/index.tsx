@@ -37,7 +37,9 @@ const PresentationHeader: React.FC<{
         </HeaderAnimationContainer>
       </View>
       <HeaderSectionContainer>
-        <HeaderSectionTitle><Feather name="grid" size={16} /> Agrupar por</HeaderSectionTitle>
+        <HeaderSectionTitle>
+          <Feather name="grid" size={16} /> Agrupar por
+        </HeaderSectionTitle>
         <HeaderSelectorsContainer>
           <Radio
             currentValue={currentGroupValue}

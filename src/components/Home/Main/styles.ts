@@ -15,7 +15,9 @@ export const SectionTitle = styled.Text`
 `;
 
 export const EmptyListContainer = styled.View`
-  margin: 40px 0;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 `
 
 export const EmptyListText = styled.Text`
@@ -23,3 +25,4 @@ export const EmptyListText = styled.Text`
   color: ${({ theme }) => theme.colors.heading};
   font-family: ${fonts.text};
 `
+
