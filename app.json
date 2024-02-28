@@ -4,9 +4,7 @@
     "slug": "soundify",
     "version": "1.0.0",
     "jsEngine": "hermes",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "extra": {
       "eas": {
         "projectId": "a62b44c4-2658-48fb-af63-dad6a5ff7f76"
@@ -16,7 +14,14 @@
     "updates": {
       "url": "https://u.expo.dev/a62b44c4-2658-48fb-af63-dad6a5ff7f76"
     },
-    "android": {},
+    "android": {
+      "package": "com.flowapps.soundify",
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics"
+    ],
     "ios": {}
   }
 }
