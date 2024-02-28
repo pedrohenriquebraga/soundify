@@ -21,7 +21,7 @@ const PresentationHeader: React.FC<{
 
   return (
     <HeaderContainer>
-      <View style={{ flexDirection: "row", alignSelf: "center" }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <HeaderTitleContainer>
           <HeaderTitle>
             Olá,

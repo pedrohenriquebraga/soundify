@@ -1,17 +1,16 @@
+import { Event } from "react-native-track-player/lib/constants";
 import TrackPlayer from "../services/trackPlayer"
-import { Event, State } from "react-native-track-player"
+import { setUserPaused, userPaused } from ".";
 
 module.exports = async function () {
 
-  let userPaused = false;
-
   TrackPlayer.addEventListener(Event.RemotePlay, async () => {
     await TrackPlayer.play();
-    userPaused = false;
+    setUserPaused(false);
   });
   TrackPlayer.addEventListener(Event.RemotePause, async () => {
     await TrackPlayer.pause()
-    userPaused = true;
+    setUserPaused(true);
   });
   TrackPlayer.addEventListener(Event.RemoteNext, async () => {
     

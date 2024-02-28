@@ -1,15 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import TrackPlayer from "../services/trackPlayer";
 import * as MediaLibrary from "expo-media-library";
+import { useProgress } from "react-native-track-player";
+import { IMusicData } from "../@types/interfaces";
+import _ from "lodash";
 import {
   Event,
   RepeatMode,
   State,
-  useProgress,
-} from "react-native-track-player";
-import { IMusicData } from "../@types/interfaces";
-import jsmediatags from "jsmediatags";
-import _ from "lodash";
+} from "react-native-track-player/lib/constants";
+import { getMusicAssets, processAssetMusic } from "../utils/music";
+import { setUserPaused } from "../services";
 
 interface IPlayerContext {
   allMusics: IMusicData[];
@@ -38,14 +39,7 @@ interface ICurrentMusic {
   cover?: string;
 }
 
-// type cachedCovers = {
-//   [key: string]: string;
-// };
-
 const PlayerContext = createContext<IPlayerContext>({} as IPlayerContext);
-
-const MAX_MUSICS_PER_REQUEST = 30;
-
 const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [allMusics, setAllMusics] = useState<IMusicData[]>([]);
   const [currentMusic, setCurrentMusic] = useState<ICurrentMusic>();
@@ -61,7 +55,11 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   useEffect(() => {
     (async () => {
       setFetchingMusics(true);
-      const assets = await getMusicAssets();
+      const { assets, endCursor, hasNextPage } = await getMusicAssets();
+
+      setHasMoreMusics(hasNextPage);
+      setNextMusicPage(endCursor);
+
       const musics = await Promise.all(assets.map(processAssetMusic));
 
       await TrackPlayer.add(
@@ -108,8 +106,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       TrackPlayer.addEventListener(Event.PlaybackState, async (data) => {
         if (data.state === State.Playing) {
           setIsPlaying(true);
+          setUserPaused(false);
         } else if (data.state === State.Paused) {
           setIsPlaying(false);
+          setUserPaused(true);
         }
       });
 
@@ -117,84 +117,15 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     })();
   }, []);
 
-  const processAssetMusic = async (
-    music: MediaLibrary.Asset,
-    index: number
-  ) => {
-    const { title, artist, cover, year } = await new Promise<{
-      title: string;
-      artist: string;
-      cover: string;
-      year: string;
-    }>((resolve) => {
-      new jsmediatags.Reader(music.uri.replace("file:///", "/"))
-        .setTagsToRead(["title", "artist", "year"])
-        .read({
-          async onSuccess(data) {
-            let coverPath = "";
-
-            // if (data.tags.picture.format) {
-
-            //   const cachedCover = await Storage.getItem(music.filename);
-            //   // @ts-ignore
-            //   // coverPath = `data:${data.tags.picture.format};base64,${encode(data.tags.picture.data)}`;
-            // }
-
-            resolve({
-              artist: data.tags.artist,
-              title: data.tags.title,
-              year: data.tags.year,
-              cover: coverPath,
-            });
-          },
-          onError(error) {
-            console.warn(error);
-
-            resolve({
-              title: "",
-              artist: "",
-              cover: "",
-              year: "",
-            });
-          },
-        });
-    });
-
-    const processedMusic = {
-      index,
-      name: title,
-      artist,
-      path: music.uri,
-      duration: music.duration,
-      albumId: music.albumId,
-      contentType: music.mediaType,
-      date: music.creationTime,
-      year,
-      cover,
-    };
-
-    return processedMusic;
-  };
-
-  const getMusicAssets = async () => {
-    const { assets, endCursor, hasNextPage } =
-      await MediaLibrary.getAssetsAsync({
-        first: MAX_MUSICS_PER_REQUEST,
-        mediaType: "audio",
-        after: nextMusicPage || undefined,
-      });
-
-    setHasMoreMusics(hasNextPage);
-    setNextMusicPage(endCursor);
-
-    return assets;
-  };
-
   const getMoreMusics = async () => {
     if (!hasMoreMusics || fetchingMusics) return;
 
     setFetchingMusics(true);
-    const assets = await getMusicAssets();
+    const { assets, endCursor, hasNextPage } = await getMusicAssets();
+
+    setHasMoreMusics(hasNextPage);
+    setNextMusicPage(endCursor);
+
     const queueSize = allMusics.length;
     const newMusics = await Promise.all(
       assets.map(

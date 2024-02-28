@@ -6324,10 +6324,10 @@ react-native-screens@~3.20.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-track-player@^2.1.2:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-2.1.4.tgz#5e75000e382c4b8ac770b53cd6463b191c38c5ea"
-  integrity sha512-pfco6xrUCCdsfazRg7hJS+V9h+JZ24bj2ZNt5Af46wwmIpmD0lYT2Ekr6ggH6/qnCcfDBeNIK5XsrtQCPCaujg==
+react-native-track-player@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-4.0.1.tgz#df80c27290db610f92dc73d89ecae8e354acb28d"
+  integrity sha512-DpqKL4TQS0kGlHwEtmMrL++mdgWb+uc75eQiP3vfYSlgvAJjbXbkL9h+cofndSuq4TTCp8jclAK+hZKqtMw6+A==
 
 react-native-web@~0.18.10:
   version "0.18.12"
