@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import TrackPlayer from "../services/trackPlayer";
-import * as MediaLibrary from "expo-media-library";
 import { useProgress } from "react-native-track-player";
 import { IMusicData } from "../@types/interfaces";
 import _ from "lodash";

@@ -3,7 +3,7 @@ import { IMusicData } from "../@types/interfaces";
 import * as MediaLibrary from "expo-media-library";
 import jsmediatags from "jsmediatags";
 
-const MAX_MUSICS_PER_REQUEST = 30;
+const MAX_MUSICS_PER_REQUEST = 20;
 
 export const processAssetMusic = async (
   music: MediaLibrary.Asset,
@@ -50,8 +50,8 @@ export const processAssetMusic = async (
 
   const processedMusic = {
     index,
-    name: title,
-    artist,
+    name: title || ">>> Música sem nome",
+    artist: artist || "Desconhecido",
     path: music.uri,
     duration: music.duration,
     albumId: music.albumId,
