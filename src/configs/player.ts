@@ -1,7 +1,7 @@
 import TrackPlayer, {
-  Capability,
-  MetadataOptions,
+  UpdateOptions,
 } from "react-native-track-player";
+import { AppKilledPlaybackBehavior, Capability } from "react-native-track-player/lib/constants";
 
 const capabilities = [
   Capability.Play,
@@ -11,9 +11,11 @@ const capabilities = [
   Capability.SeekTo,
 ];
 
-export const updateConfigs: MetadataOptions = {
-  stopWithApp: true,
-  alwaysPauseOnInterruption: true,
+export const updateConfigs: UpdateOptions = {
+  android: {
+    alwaysPauseOnInterruption: true,
+    appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+  },
   icon: require("../assets/icon.png"),
   playIcon: require("../assets/play-icon.png"),
   pauseIcon: require("../assets/pause-icon.png"),
