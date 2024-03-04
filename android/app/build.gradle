@@ -120,8 +120,8 @@ android {
         applicationId "com.flowapps.soundify"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 3
+        versionName "0.0.3"
     }
 
     splits {
@@ -212,6 +212,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
 
     implementation project(':react-native-fs')
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

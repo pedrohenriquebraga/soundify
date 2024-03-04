@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
 import { IMusicData } from "../../../@types/interfaces";
 import { usePlayer } from "../../../contexts/player";
@@ -23,7 +22,6 @@ interface IMusicCardProps {
 }
 
 const MusicCard: React.FC<IMusicCardProps> = ({ music }) => {
-  const { colors } = useTheme();
   const { handleSelectMusic, allMusics, currentMusic } = usePlayer();
 
   const currentMusicPath = useMemo(() => {

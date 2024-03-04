@@ -164,7 +164,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       duration,
       cover: allMusics[trackIndex].cover,
     }));
-    await TrackPlayer.skip(trackIndex);
+    await TrackPlayer.skip(trackIndex, 0)
     await TrackPlayer.play();
   };
 
