@@ -212,7 +212,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
 
     implementation project(':react-native-fs')
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    implementation "androidx.appcompat:appcompat:1.6.0"
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

@@ -2781,6 +2781,11 @@ base-64@^0.1.0:
   resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
   integrity sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==
 
+base-64@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/base-64/-/base-64-1.0.0.tgz#09d0f2084e32a3fd08c2475b973788eee6ae8f4a"
+  integrity sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==
+
 base64-arraybuffer@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz#1c37589a7c4b0746e34bd1feb951da2df01c1bdc"
@@ -3690,6 +3695,13 @@ expo-error-recovery@^4.0.1:
   resolved "https://registry.yarnpkg.com/expo-error-recovery/-/expo-error-recovery-4.0.1.tgz#3e3333e134c992c234539d3773fe78915c883755"
   integrity sha512-wceptnRX+N3qCSVTNbIchUFu3GmY30onRH5L66OF8HMLpAIQfrZMLxJfz7SAMJTcr3jxsJ11vSa2l2RaPKgHsQ==
 
+expo-file-system@^15.4.2:
+  version "15.9.0"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-15.9.0.tgz#b048b9168875634efcce0aa002ee0eec31ed42a8"
+  integrity sha512-ikzqBGpbSzp/57+aruXzRR2s0HEVYxdd1o3RxfswJRujjT/6X128xmUTTFDaQUr+zydyvxvY7Mo0szWpXhPyLA==
+  dependencies:
+    uuid "^3.4.0"
+
 expo-file-system@~15.2.0, expo-file-system@~15.2.2:
   version "15.2.2"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-15.2.2.tgz#a1ddf8aabf794f93888a146c4f5187e2004683a3"
@@ -3760,6 +3772,14 @@ expo-modules-core@1.2.7:
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
+
+expo-music-info-2@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/expo-music-info-2/-/expo-music-info-2-2.0.0.tgz#85b00a53c019f9fd19f30d13b34e8f135704b036"
+  integrity sha512-QKrnzNIBJuLEc5IRaAuPgVro3EJCW5vhFjfFZfPFv9x2hfG8iy8iH0NgCuKhk0y7mldcWutd8nctXxEdp8BGnQ==
+  dependencies:
+    base-64 "^1.0.0"
+    expo-file-system "^15.4.2"
 
 expo-splash-screen@~0.14.0:
   version "0.14.2"
@@ -6324,7 +6344,7 @@ react-native-screens@~3.20.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-track-player@^4.0.1:
+react-native-track-player@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-4.0.1.tgz#df80c27290db610f92dc73d89ecae8e354acb28d"
   integrity sha512-DpqKL4TQS0kGlHwEtmMrL++mdgWb+uc75eQiP3vfYSlgvAJjbXbkL9h+cofndSuq4TTCp8jclAK+hZKqtMw6+A==

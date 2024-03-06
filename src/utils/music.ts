@@ -1,9 +1,10 @@
-import TrackPlayer from "react-native-track-player";
 import { IMusicData, IProcessedMusic } from "../@types/interfaces";
 import * as MediaLibrary from "expo-media-library";
-import jsmediatags from "jsmediatags";
+import MusicInfo from "../libs/expo-info";
+import _ from "lodash";
+import { MusicInfoResponse } from "../libs/expo-info/MusicInfo";
 
-const MAX_MUSICS_PER_REQUEST = 20;
+const MAX_MUSICS_PER_REQUEST = 10;
 
 export const processAssetMusic = async (
   music: MediaLibrary.Asset,
@@ -15,30 +16,29 @@ export const processAssetMusic = async (
     cover: string;
     year: string;
   }>((resolve) => {
-    new jsmediatags.Reader(music.uri.replace("file:///", "/"))
-      .setTagsToRead(["title", "artist", "year"])
-      .read({
-        async onSuccess(data) {
-          let coverPath = "";
-
+    //@ts-ignore
+    new MusicInfo.getMusicInfoAsync(music.uri, { picture: true }).then(
+      (data: MusicInfoResponse) => {
+        if (!_.isObjectLike(data)) {
           resolve({
-            artist: data.tags.artist,
-            title: data.tags.title,
-            year: data.tags.year,
-            cover: coverPath,
-          });
-        },
-        onError(error) {
-          console.warn(error);
-
-          resolve({
-            title: "",
             artist: "",
-            cover: "",
+            title: "",
             year: "",
+            cover: "",
           });
-        },
-      });
+          return;
+        }
+
+        let coverPath = data && data.picture ? data.picture.pictureData : "";
+
+        resolve({
+          artist: data.artist,
+          title: data.title,
+          year: "",
+          cover: coverPath,
+        });
+      }
+    );
   });
 
   const processedMusic = {
@@ -67,19 +67,20 @@ export const contructObjectForTrackPlayer = (music: IProcessedMusic) => {
     contentType: music.contentType,
     artwork: music.cover || require("../assets/artwork.png"),
   };
-}
+};
 
-export const getMusicAssets = async (nextMusicPage: MediaLibrary.AssetRef = undefined) => {
-  const { assets, endCursor, hasNextPage } =
-    await MediaLibrary.getAssetsAsync({
-      first: MAX_MUSICS_PER_REQUEST,
-      mediaType: "audio",
-      after: nextMusicPage,
-    })
+export const getMusicAssets = async (
+  nextMusicPage: MediaLibrary.AssetRef = undefined
+) => {
+  const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
+    first: MAX_MUSICS_PER_REQUEST,
+    mediaType: "audio",
+    after: nextMusicPage,
+  });
 
-  return {assets, endCursor, hasNextPage};
+  return { assets, endCursor, hasNextPage };
 };
 
 export const reorganizeTracks = async (trackList: IMusicData[]) => {
   // TrackPlayer.
-}
+};

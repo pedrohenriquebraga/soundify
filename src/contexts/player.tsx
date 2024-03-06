@@ -49,7 +49,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [allMusics, setAllMusics] = useState<IMusicData[]>([]);
   const [currentMusic, setCurrentMusic] = useState<ICurrentMusic>();
   const [hasMoreMusics, setHasMoreMusics] = useState(true);
-  const [nextMusicPage, setNextMusicPage] = useState("");
+  const [nextMusicPage, setNextMusicPage] = useState(undefined);
   const [fetchingMusics, setFetchingMusics] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -63,7 +63,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
     if (!hasMoreMusics || fetchingMusics) return;
 
     setFetchingMusics(true);
-    const { assets, endCursor, hasNextPage } = await getMusicAssets();
+    const { assets, endCursor, hasNextPage } = await getMusicAssets(nextMusicPage);
 
     setHasMoreMusics(hasNextPage);
     setNextMusicPage(endCursor);
@@ -197,9 +197,9 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       if (!hasPermission)
         return
       TrackPlayer.addEventListener(
-        Event.PlaybackMetadataReceived,
+        Event.MetadataCommonReceived,
         async (data) => {
-          const currentTrack = await TrackPlayer.getCurrentTrack();
+          const currentTrack = await TrackPlayer.getActiveTrackIndex();
 
           if (currentMusic && currentTrack === currentMusic.index) return;
 
@@ -207,7 +207,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
           setCurrentMusic((old) => ({
             index: currentTrack,
-            name: data.title,
+            name: data.metadata.title,
             artist: track.artist,
             duration: duration,
             cover:
@@ -225,8 +225,6 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
           setUserPaused(true);
         }
       });
-
-      TrackPlayer.setRepeatMode(RepeatMode.Queue);
     })();
   }, [hasPermission]);
 
