@@ -10,14 +10,12 @@ import {
   MiniPlayerCoverContainer,
   MiniPlayerLeftSide,
   MiniPlayerMusicName,
-  MiniPlayerTitle,
 } from "./styles";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { usePlayer } from "../../contexts/player";
-import { MotiView } from "moti";
-import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { useIsPlaying } from "react-native-track-player";
 
 const MiniPlayer: React.FC = () => {
   const {
@@ -25,10 +23,11 @@ const MiniPlayer: React.FC = () => {
     handlePrevMusic,
     handleNextMusic,
     currentMusic,
-    isPlaying,
   } = usePlayer();
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
+
+  const { playing } = useIsPlaying()
 
   const handleGoMusicPlayer = async () => {
     navigation.navigate("MusicPlayer");
@@ -76,7 +75,7 @@ const MiniPlayer: React.FC = () => {
           </MiniPlayerActionButton>
           <MiniPlayerActionButton onPress={playAndPauseMusic}>
             <MaterialIcons
-              name={isPlaying ? "pause" : "play-arrow"}
+              name={playing ? "pause" : "play-arrow"}
               size={30}
               color={colors.black}
             />

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import TrackPlayer from "../services/trackPlayer";
-import { useProgress } from "react-native-track-player";
+import { useProgress, useIsPlaying } from "react-native-track-player";
 import { IMusicData } from "../@types/interfaces";
 import _ from "lodash";
 import {
@@ -20,7 +20,6 @@ interface IPlayerContext {
   currentMusic: ICurrentMusic;
   hasMoreMusics: boolean;
   fetchingMusics: boolean;
-  isPlaying: boolean;
   isLooped: boolean;
   isMuted: boolean;
   hasPermission: boolean;
@@ -51,19 +50,21 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   const [hasMoreMusics, setHasMoreMusics] = useState(true);
   const [nextMusicPage, setNextMusicPage] = useState(undefined);
   const [fetchingMusics, setFetchingMusics] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isLooped, setIsLooped] = useState(false);
 
   const [hasPermission, setHasPermission] = useState(false);
 
   const { position, duration } = useProgress(1500);
+  const { playing } = useIsPlaying();
 
   const getMoreMusics = async () => {
     if (!hasMoreMusics || fetchingMusics) return;
 
     setFetchingMusics(true);
-    const { assets, endCursor, hasNextPage } = await getMusicAssets(nextMusicPage);
+    const { assets, endCursor, hasNextPage } = await getMusicAssets(
+      nextMusicPage
+    );
 
     setHasMoreMusics(hasNextPage);
     setNextMusicPage(endCursor);
@@ -82,12 +83,10 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   };
 
   const playAndPauseMusic = async () => {
-    if (isPlaying) {
+    if (playing) {
       await TrackPlayer.pause();
-      setIsPlaying(false);
     } else {
       await TrackPlayer.play();
-      setIsPlaying(true);
     }
   };
 
@@ -164,7 +163,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
       duration,
       cover: allMusics[trackIndex].cover,
     }));
-    await TrackPlayer.skip(trackIndex, 0)
+    await TrackPlayer.skip(trackIndex, 0);
     await TrackPlayer.play();
   };
 
@@ -174,9 +173,7 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
 
   useEffect(() => {
     (async () => {
-
-      if (!hasPermission)
-        return
+      if (!hasPermission) return;
 
       setFetchingMusics(true);
       const { assets, endCursor, hasNextPage } = await getMusicAssets();
@@ -193,40 +190,35 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
   }, [hasPermission]);
 
   useEffect(() => {
-    (async () => {
-      if (!hasPermission)
-        return
-      TrackPlayer.addEventListener(
-        Event.MetadataCommonReceived,
-        async (data) => {
-          const currentTrack = await TrackPlayer.getActiveTrackIndex();
+    TrackPlayer.addEventListener(
+      Event.MetadataCommonReceived,
+      async (data) => {
+        console.log("[Track Player Log] Música trocada");
 
-          if (currentMusic && currentTrack === currentMusic.index) return;
+        const currentTrack = await TrackPlayer.getActiveTrackIndex();
 
-          const track = await TrackPlayer.getTrack(currentTrack);
+        if (currentMusic && currentTrack === currentMusic.index) return;
 
-          setCurrentMusic((old) => ({
-            index: currentTrack,
-            name: data.metadata.title,
-            artist: track.artist,
-            duration: duration,
-            cover:
-              typeof track.artwork === "string" ? track.artwork : undefined,
-          }));
-        }
-      );
+        const track = await TrackPlayer.getTrack(currentTrack);
 
-      TrackPlayer.addEventListener(Event.PlaybackState, async (data) => {
-        if (data.state === State.Playing) {
-          setIsPlaying(true);
-          setUserPaused(false);
-        } else if (data.state === State.Paused) {
-          setIsPlaying(false);
-          setUserPaused(true);
-        }
-      });
-    })();
-  }, [hasPermission]);
+        setCurrentMusic((old) => ({
+          index: currentTrack,
+          name: data.metadata.title,
+          artist: track.artist,
+          duration: duration,
+          cover: typeof track.artwork === "string" ? track.artwork : undefined,
+        }));
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (playing) {
+      setUserPaused(false);
+    } else if (!playing) {
+      setUserPaused(true);
+    }
+  }, [playing]);
 
   return (
     // @ts-ignore
@@ -243,13 +235,12 @@ const PlayerProvider: React.FC<{ children: any }> = ({ children }) => {
         useProgress,
         getMoreMusics,
         currentMusic,
-        isPlaying,
         isMuted,
         isLooped,
         fetchingMusics,
         hasMoreMusics,
         hasPermission,
-        setHasPermission
+        setHasPermission,
       }}
     >
       {children}

@@ -102,7 +102,33 @@ const Main: React.FC = () => {
           render: () => <MusicSection content={sortedMusicsByYear[key]} />,
         });
       });
-    }
+    } else if (currentGroup === GroupTypes.ALBUM) {
+      const sortedMusicsByYear = {};
+
+      allMusics.map((music) => {
+        sortedMusicsByYear[music.albumId || "Desconhecido"] = sortedMusicsByYear[
+          music.albumId || "Desconhecido"
+        ]
+          ? [...sortedMusicsByYear[music.albumId || "Desconhecido"], music]
+          : [music];
+      });
+
+      Object.keys(sortedMusicsByYear).map((key) => {
+        data.push({
+          key,
+          isTitle: true,
+          render: () => (
+            <SectionTitle>
+              <Feather name="calendar" size={16} /> {key}
+            </SectionTitle>
+          ),
+        });
+        data.push({
+          key: `${key}-musics`,
+          render: () => <MusicSection content={sortedMusicsByYear[key]} />,
+        });
+      });
+    } 
 
     setLoadingGroup(false);
 

@@ -24,11 +24,11 @@ import { usePlayer } from "../../contexts/player";
 import { secondsToTime } from "../../utils/time";
 
 import imageColors from "react-native-image-colors";
+import { useIsPlaying } from "react-native-track-player";
 
 const MusicPlayer: React.FC = () => {
   const {
     currentMusic,
-    isPlaying,
     isMuted,
     isLooped,
     useProgress,
@@ -40,6 +40,7 @@ const MusicPlayer: React.FC = () => {
     handleSeek,
   } = usePlayer();
   const { colors } = useTheme();
+  const { playing } = useIsPlaying()
   const [coverColor, setCoverColor] = useState(colors.secondary);
   const [playColor, setPlayColor] = useState(colors.primary);
 
@@ -119,7 +120,7 @@ const MusicPlayer: React.FC = () => {
             </MusicControllerButton>
             <MusicControllerButton onPress={playAndPauseMusic}>
               <MaterialIcons
-                name={isPlaying ? "pause-circle-filled" : "play-circle-fill"}
+                name={playing ? "pause-circle-filled" : "play-circle-fill"}
                 size={75}
                 color={playColor}
               />

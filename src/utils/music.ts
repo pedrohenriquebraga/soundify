@@ -10,11 +10,12 @@ export const processAssetMusic = async (
   music: MediaLibrary.Asset,
   index: number
 ) => {
-  const { title, artist, cover, year } = await new Promise<{
+  const { title, artist, cover, year, album } = await new Promise<{
     title: string;
     artist: string;
     cover: string;
     year: string;
+    album: string;
   }>((resolve) => {
     //@ts-ignore
     new MusicInfo.getMusicInfoAsync(music.uri, { picture: true }).then(
@@ -25,6 +26,7 @@ export const processAssetMusic = async (
             title: "",
             year: "",
             cover: "",
+            album: ""
           });
           return;
         }
@@ -36,6 +38,7 @@ export const processAssetMusic = async (
           title: data.title,
           year: "",
           cover: coverPath,
+          album: data.album
         });
       }
     );
@@ -47,7 +50,7 @@ export const processAssetMusic = async (
     artist: artist || "Desconhecido",
     path: music.uri,
     duration: music.duration,
-    albumId: music.albumId,
+    albumId: album,
     contentType: music.mediaType,
     date: music.creationTime,
     year,

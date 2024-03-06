@@ -53,6 +53,7 @@ const PresentationHeader: React.FC<{
                 value: GroupTypes.ALL,
               },
               { label: "Artistas", value: GroupTypes.ARTISTS },
+              { label: "Album", value: GroupTypes.ALBUM },
               { label: "Ano de lançamento", value: GroupTypes.YEAR },
             ]}
           />
